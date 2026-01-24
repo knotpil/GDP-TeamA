@@ -1,24 +1,14 @@
-half4 stripe(Varyings IN, half4 BaseColor) : SV_Target
+half4 stripe(Varyings IN, half4 BaseColor)
 {
-                
-    float localX = IN.positionOS.x + 0.5;
-                
-    float mask = 0.0;
 
-    for (int i = 0; i < (int)_Count; ++i)
-    {
-        // max of 1 so we don't divide by 0
-        float bandPos = _Offset + (float(i) / max(1.0, _Count));
-                    
-        // distance from the center of the band
-        float dist = abs(localX - bandPos);
-                    
-        // smooth the bands if wanted
-        float stripe = smoothstep(_Width + _Smooth, _Width - _Smooth, dist);
-                    
-        // accumulate the bigger value
-        mask = max(mask, stripe);
-    }
-
+    float3 dir = normalize(_StripeDirection.xyz);
+    float pos = dot(IN.positionOS, dir);
+    
+    float fraction = frac((pos + _StripeOffset) * (_StripeCount / _StripeSpacing));
+    
+    float dist = abs(fraction - 0.5);
+    
+    float mask = smoothstep(_StripeWidth + _StripeSmooth, _StripeWidth - _StripeSmooth, dist);
+    
     return lerp(BaseColor, _StripeColor, mask);
 }
