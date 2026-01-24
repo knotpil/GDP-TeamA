@@ -1,3 +1,7 @@
+// Chunky file that takes values from the editor and passes them to the shader
+// The material is instanced so that it is not universally updated on all objects
+// Also takes the place of the default renderer for the shell layering effect
+
 using UnityEngine;
 
 [ExecuteAlways]
@@ -61,12 +65,18 @@ public class ChatShaderCtrl : MonoBehaviour
     void OnValidate()
     {
         if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
-        Renderer renderer = mesh.GetComponent<Renderer>();
-        renderer.GetPropertyBlock(_propBlock);
-        _propBlock.SetColor(BaseColorId, baseColor);
-        renderer.SetPropertyBlock(_propBlock);
+        if (mesh != null)
+        {
+            Renderer rend = mesh.GetComponent<Renderer>();
+            if (rend != null)
+            {
+                rend.GetPropertyBlock(_propBlock);
+                _propBlock.SetColor(BaseColorId, baseColor);
+                rend.SetPropertyBlock(_propBlock);
+            }
+            
+        }
     }
-
     
     void Update()
     {

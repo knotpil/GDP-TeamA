@@ -79,58 +79,78 @@ Shader "Custom/ShellStripesAndSpots"
                 float _CurrentShellHeight; 
             CBUFFER_END
 
+            // makes the spots "random"
             float hash3D(float3 p) {
                 p = frac(p * 0.3183099 + 0.1);
                 p *= 17.0;
                 return frac(p.x * p.y * p.z * (p.x + p.y + p.z));
             }
+            
+            // split out function for readability 
+            #include "stripes.cginc"
 
             Varyings vert(Attributes IN) {
                 Varyings OUT;
+                // extrude the shell out based on index
                 float3 extrudedPos = IN.positionOS.xyz + (IN.normalOS * _CurrentShellHeight * _ShellLength);
-                
                 OUT.positionHCS = TransformObjectToHClip(extrudedPos);
+                // data to the frag
                 OUT.uv = IN.uv;
                 OUT.positionOS = IN.positionOS.xyz;
                 OUT.heightNormalized = _CurrentShellHeight;
                 return OUT;
             }
-            
-            #include "stripes.cginc"
 
             half4 frag(Varyings IN) : SV_Target {
-
-                float2 furUV = IN.uv * _FurDensity;
-                float2 localUV = frac(furUV) * 2.0 - 1.0;
-                float distToCenter = length(localUV);
                 
-
+                // shell texturing bits
+                //
+                // create the grid of fur strands 
+                float2 furUV = IN.uv * _FurDensity;
+                // make the inside of each cell 0 - 1 
+                float2 localUV = frac(furUV) * 2.0 - 1.0;
+                // how far the pixel is from the center
+                float distToCenter = length(localUV);
+                // fur thickness based on distance from mesh
                 float threshold = _FurThickness * (1.0 - pow(IN.heightNormalized, _TaperExponent));
                 
-
+                // if the pixel is out of range from mesh don't bother with it
+                // skips the following calculations 
                 if (distToCenter > threshold) discard;
 
+                
+                // call the stripe function from stripes.cginc
                 half3 color = stripe(IN, _BaseColor);
 
 
+                // spot calculation happens here
+                //
+                // objects position is multiplied by spot count to create a grid
                 float3 p = IN.positionOS * _SpotCount;
+                // what part of the cell grid is the pixel in
                 float3 i = floor(p);
+                // where in the cell is the pixel 
                 float3 f = frac(p);
                 float minDist = 1.0;
                 for (int z = -1; z <= 1; z++) {
                     for (int y = -1; y <= 1; y++) {
                         for (int x = -1; x <= 1; x++) {
                             float3 neighbor = float3(x, y, z);
+                            // create a spot in the next cell with a random position
                             float3 randCenter = neighbor + hash3D(i + neighbor) * _SpotRandomness;
+                            // smallest distance away from the spot is kept
                             minDist = min(minDist, distance(f, randCenter));
                         }
                     }
                 }
                 float spotMask = smoothstep(_SpotSize, _SpotSize - 0.01, minDist);
+                // apply the spots to the stripped color
                 color = lerp(color, _SpotColor.rgb, spotMask);
 
+                // darken the shell texture based on height
                 float ao = lerp(0.3, 1.0, IN.heightNormalized);
                 
+                // the color itself
                 return half4(color * ao, 1.0);
             }
             ENDHLSL
