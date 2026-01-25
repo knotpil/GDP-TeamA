@@ -31,6 +31,7 @@ Shader "Custom/CatMat"
         _SpotCount ("Spot Density", Float) = 5
         _SpotSize ("Spot Size", Range(0, 1)) = .1
         _SpotRandomness ("Spot Randomness", Range(0, 1)) = 0.5
+        _GravityStrength("Fur Gravity", Float) = .2
     }
 
     SubShader
@@ -47,6 +48,7 @@ Shader "Custom/CatMat"
             #pragma vertex vert
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct Attributes {
                 float4 positionOS : POSITION;
@@ -85,6 +87,7 @@ Shader "Custom/CatMat"
                 float _SpotRandomness;
                 float _CurrentShellHeight; 
                 float _NoiseScale;
+                float _GravityStrength;
             CBUFFER_END
 
             // makes the spots "random"
@@ -97,15 +100,27 @@ Shader "Custom/CatMat"
             // split out function for readability 
             #include "stripes.cginc"
 
-            Varyings vert(Attributes IN) {
+           Varyings vert(Attributes IN) {
                 Varyings OUT;
-                // extrude the shell out based on index
-                float3 extrudedPos = IN.positionOS.xyz + (IN.normalOS * _CurrentShellHeight * _ShellLength);
-                // data to the frag
-                OUT.positionHCS = TransformObjectToHClip(extrudedPos);
+                
+                float3 extrusion = IN.normalOS * _CurrentShellHeight * _ShellLength;
+                
+                float3 gravityDir = float3(0, -1, 0); 
+                
+                // change gravity from world to object space so it feels like global gravity
+                float3 gravityObjSpace = mul((float3x3)GetWorldToObjectMatrix(), gravityDir);
+                
+                // displacement by height
+                float gravityEffect = pow(_CurrentShellHeight, 2.0) * _GravityStrength;
+                float3 gravityOffset = gravityObjSpace * gravityEffect;
+
+                float3 finalPosOS = IN.positionOS.xyz + extrusion + (gravityOffset / 1.8);
+
+                OUT.positionHCS = TransformObjectToHClip(finalPosOS);
                 OUT.uv = IN.uv;
                 OUT.positionOS = IN.positionOS.xyz;
                 OUT.heightNormalized = _CurrentShellHeight;
+                
                 return OUT;
             }
 
@@ -123,6 +138,7 @@ Shader "Custom/CatMat"
                 
                 // if the pixel is out of range from mesh don't bother with it
                 // skips the following calculations 
+                // this also tapers it based on height
                 if (furNoise < threshold + (1.0 - _FurThickness)) discard;
 
                 
@@ -155,7 +171,7 @@ Shader "Custom/CatMat"
                 color = lerp(color, _SpotColor.rgb, spotMask);
 
                 // darken the shell texture based on height
-                float ao = lerp(0.3, 1.0, IN.heightNormalized);
+                float ao = lerp(0.2, 1.0, IN.heightNormalized);
                 
                 // the color itself
                 return half4(color * ao, 1.0);
