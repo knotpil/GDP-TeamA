@@ -1,4 +1,4 @@
-Shader "Custom/ShellStripesAndSpots"
+Shader "Custom/CatMat"
 {
     Properties
     {
@@ -11,6 +11,10 @@ Shader "Custom/ShellStripesAndSpots"
         _FurDensity("Fur Density", Float) = 100
         _FurThickness("Fur Thickness", Range(0, 1)) = 0.5
         _TaperExponent("Taper Curve", Range(0.1, 5)) = 1.0
+        
+        [Header(Noise Settings)]
+        [NoScaleOffset] _NoiseMap("Fur Noise Map", 2D) = "white" {}
+        _NoiseScale("Noise Scale", Float) = 1.0
         
         [Header(Stripe Settings)]
         _StripeColor("Stripe Color", Color) = (0, 0, 0, 1)
@@ -56,6 +60,9 @@ Shader "Custom/ShellStripesAndSpots"
                 float3 positionOS : TEXCOORD1;
                 float heightNormalized : TEXCOORD3;
             };
+            
+            TEXTURE2D(_NoiseMap);
+            SAMPLER(sampler_NoiseMap);
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
@@ -77,6 +84,7 @@ Shader "Custom/ShellStripesAndSpots"
                 float _SpotSize;
                 float _SpotRandomness;
                 float _CurrentShellHeight; 
+                float _NoiseScale;
             CBUFFER_END
 
             // makes the spots "random"
@@ -93,8 +101,8 @@ Shader "Custom/ShellStripesAndSpots"
                 Varyings OUT;
                 // extrude the shell out based on index
                 float3 extrudedPos = IN.positionOS.xyz + (IN.normalOS * _CurrentShellHeight * _ShellLength);
-                OUT.positionHCS = TransformObjectToHClip(extrudedPos);
                 // data to the frag
+                OUT.positionHCS = TransformObjectToHClip(extrudedPos);
                 OUT.uv = IN.uv;
                 OUT.positionOS = IN.positionOS.xyz;
                 OUT.heightNormalized = _CurrentShellHeight;
@@ -105,18 +113,17 @@ Shader "Custom/ShellStripesAndSpots"
                 
                 // shell texturing bits
                 //
-                // create the grid of fur strands 
-                float2 furUV = IN.uv * _FurDensity;
-                // make the inside of each cell 0 - 1 
-                float2 localUV = frac(furUV) * 2.0 - 1.0;
-                // how far the pixel is from the center
-                float distToCenter = length(localUV);
-                // fur thickness based on distance from mesh
-                float threshold = _FurThickness * (1.0 - pow(IN.heightNormalized, _TaperExponent));
+                // sample a noise texture for shell properties 
+                float2 noiseUV = IN.uv * _FurDensity * _NoiseScale;
+                float furNoise = SAMPLE_TEXTURE2D(_NoiseMap, sampler_NoiseMap, noiseUV).r;
+                
+                // as height increases a higher noise value to keep the pixel
+                // if its out of the threshold the rest of the shader is skipped
+                float threshold = pow(IN.heightNormalized, _TaperExponent);
                 
                 // if the pixel is out of range from mesh don't bother with it
                 // skips the following calculations 
-                if (distToCenter > threshold) discard;
+                if (furNoise < threshold + (1.0 - _FurThickness)) discard;
 
                 
                 // call the stripe function from stripes.cginc
