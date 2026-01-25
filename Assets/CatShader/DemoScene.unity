@@ -288,17 +288,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b15bb7d8dd2445c29a28f103d0679cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChatShaderCtrl
-  baseColor: {r: 1, g: 1, b: 1, a: 1}
+  baseColor: {r: 0.9056604, g: 0.49127805, b: 0.49127805, a: 1}
   stripeColor: {r: 1, g: 1, b: 1, a: 1}
-  stripeWidth: 0.215
+  stripeWidth: 0.331
   stripeBlend: 0
   stripeOffset: 0
-  stripeCount: 2.8
+  stripeCount: 3.9
   stripeDirection: {x: 0, y: 1, z: 0, w: 0}
   stripeSpacing: 0.86
-  waveFrequency: 11
+  waveFrequency: 8.7
   waveStrength: 0.1
-  spotColor: {r: 0.7287736, g: 0.9716981, b: 0.9645628, a: 1}
+  spotColor: {r: 1, g: 0.89800024, b: 0.2971698, a: 1}
   spotCount: 5
   spotSize: 0
   spotSmooth: 0.1
@@ -309,8 +309,8 @@ MonoBehaviour:
   shellLength: 0.1
   taperExponent: 5
   furDensity: 200
-  furThickness: 0.669
-  noiseScale: 0.011
+  furThickness: 0.742
+  noiseScale: 0.022
   mesh: {fileID: 1373945136}
 --- !u!135 &414191335
 SphereCollider:
@@ -743,6 +743,7 @@ GameObject:
   - component: {fileID: 1545736314}
   - component: {fileID: 1545736313}
   - component: {fileID: 1545736312}
+  - component: {fileID: 1545736315}
   m_Layer: 0
   m_Name: cat
   m_TagString: Untagged
@@ -810,6 +811,19 @@ Transform:
   - {fileID: 602513557}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: -132.473}
+--- !u!114 &1545736315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545736311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a6eb89dcec1e4049bddded936d393ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RotateCat
+  rotationSpeed: 35
 --- !u!1 &2136880814
 GameObject:
   m_ObjectHideFlags: 0
