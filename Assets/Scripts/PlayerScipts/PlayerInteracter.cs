@@ -5,6 +5,9 @@ public class PlayerInteractor : MonoBehaviour
     public Camera playerCamera;
     public float interactRange = 3f;
 
+    //reference to what player is holding
+    public GameObject holding = null;
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))

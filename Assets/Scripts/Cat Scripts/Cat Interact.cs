@@ -1,11 +1,13 @@
 using UnityEngine;
 
-public class PickupCube : MonoBehaviour, Interactable
+public class CatInteract : MonoBehaviour, Interactable
 {
     public float holdDistance = 2f;
     public float followSpeed = 20f;
+    public bool inOven = false;
 
     bool isHeld;
+
     Transform holderCamera;
 
     Rigidbody rb;
@@ -27,6 +29,7 @@ public class PickupCube : MonoBehaviour, Interactable
 
     public void Interact(PlayerInteractor interactor)
     {
+        if (inOven) return;
         if (!isHeld)
         {
             holderCamera = interactor.playerCamera.transform;
@@ -37,7 +40,7 @@ public class PickupCube : MonoBehaviour, Interactable
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.freezeRotation = true;
-            Debug.Log("Holding" + this.gameObject.name);
+            Debug.Log("Picking up" + this.gameObject.name);
         }
         else
         {
@@ -45,7 +48,10 @@ public class PickupCube : MonoBehaviour, Interactable
             holderCamera = null;
 
             rb.useGravity = true;
-            rb.freezeRotation = false;
+            //rb.freezeRotation = false;
+            Debug.Log("Dropped" + this.gameObject.name);
         }
     }
+
+
 }
