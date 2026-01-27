@@ -9,7 +9,7 @@ public class Ordering : MonoBehaviour
     public CustomerOrder customerScript;
 
     [Header("Current Orders")]
-    public Queue<Order> orderQueue;
+    public Queue<Order> orderQueue = new Queue<Order>();
 
     private void Update()
     {
@@ -21,6 +21,10 @@ public class Ordering : MonoBehaviour
                 orderQueue.Enqueue(customerScript.o);
                 customerScript.placed = true;
             }
+            Debug.Log(orderQueue.Peek().h_);
+            Debug.Log(orderQueue.Peek().w_);
+            Debug.Log(orderQueue.Peek().p_);
         }
     }
 }
+
