@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 5881042985193027387}
   - component: {fileID: 7264076497196526114}
   m_Layer: 0
-  m_Name: Spots
+  m_Name: Cat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b15bb7d8dd2445c29a28f103d0679cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChatShaderCtrl
-  baseColor: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
+  baseColor: {r: 0.9433962, g: 0.7360808, b: 0.25364897, a: 1}
   stripeColor: {r: 0.41451588, g: 0.59797204, b: 0.764151, a: 1}
   stripeWidth: 0
   stripeBlend: 0
@@ -145,19 +145,19 @@ MonoBehaviour:
   waveFrequency: 0.1
   waveStrength: 0.1
   spotColor: {r: 1, g: 1, b: 1, a: 1}
-  spotCount: 3.4
-  spotSize: 0.368
+  spotCount: 0.9
+  spotSize: 0.541
   spotSmooth: 0.454
-  spotRandomness: 0.264
+  spotRandomness: 0.229
   shellMesh: {fileID: 4493585093827132993, guid: f04b69c7c919b43ea94d1d073228a7b6, type: 3}
   shellMaterial: {fileID: 2100000, guid: 5f2294638362f4ffba0938a3065f2be4, type: 2}
   shellCount: 16
-  shellLength: 0.1
+  shellLength: 0.5
   shellGravity: 0.01
   taperExponent: 1.5
   furDensity: 200
   furThickness: 1
-  noiseScale: 0.05
+  noiseScale: 0.042
   mesh: {fileID: 0}
 --- !u!114 &6780372790057818750
 MonoBehaviour:

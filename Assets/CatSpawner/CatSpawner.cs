@@ -11,6 +11,7 @@ public class CatSpawner : MonoBehaviour, Interactable
         Vector3 spawnPosition = transform.position + new Vector3(0, yOffset, 0);
         Quaternion rotation = Quaternion.Euler(90, 0, 0);
         GameObject newCat = Instantiate(catPrefab, spawnPosition, rotation);
+        newCat.name = "Cat";
     }
 
 
