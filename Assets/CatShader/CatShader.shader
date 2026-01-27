@@ -9,7 +9,8 @@ Shader "Custom/CatMat"
         [Header(Shell Settings)]
         _ShellLength("Total Fur Length", Float) = 0.1
         _FurDensity("Fur Density", Float) = 100
-        _FurThickness("Fur Thickness", Range(0, 1)) = 0.5
+        _FurThickness("Fur Thickness", Range(0, 1)) = 1.0
+        _GravityStrength("Fur Gravity", Float) = .2
         _TaperExponent("Taper Curve", Range(0.1, 5)) = 1.0
         
         [Header(Noise Settings)]
@@ -31,7 +32,7 @@ Shader "Custom/CatMat"
         _SpotCount ("Spot Density", Float) = 5
         _SpotSize ("Spot Size", Range(0, 1)) = .1
         _SpotRandomness ("Spot Randomness", Range(0, 1)) = 0.5
-        _GravityStrength("Fur Gravity", Float) = .2
+        
     }
 
     SubShader

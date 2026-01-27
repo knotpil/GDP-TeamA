@@ -31,9 +31,10 @@ public class ChatShaderCtrl : MonoBehaviour
     public Material shellMaterial;
     [Range(4, 64)] public int shellCount = 16;
     public float shellLength = 0.1f;
+    public float shellGravity = 0.1f;
     [Range(0.1f, 5f)] public float taperExponent = 1.5f;
     public float furDensity = 100f;
-    [Range(0, 1)] public float furThickness = 0.5f;
+    [Range(0, 1)] public float furThickness = 1.0f;
     [Range(0,0.2f)]public float noiseScale = 0.05f;
 
     public GameObject mesh;
@@ -63,6 +64,7 @@ public class ChatShaderCtrl : MonoBehaviour
     private static readonly int FurDensityId = Shader.PropertyToID("_FurDensity");
     private static readonly int FurThicknessId = Shader.PropertyToID("_FurThickness");
     private static readonly int NoiseScaleId = Shader.PropertyToID("_NoiseScale");
+    private static readonly int ShellGravityId = Shader.PropertyToID("_GravityStrength");
 
     void OnValidate()
     {
@@ -112,6 +114,7 @@ public class ChatShaderCtrl : MonoBehaviour
         _propBlock.SetFloat(FurDensityId, furDensity);
         _propBlock.SetFloat(FurThicknessId, furThickness);
         _propBlock.SetFloat(NoiseScaleId, noiseScale);
+        _propBlock.SetFloat(ShellGravityId, shellGravity);
         
         for (int i = 0; i < shellCount; i++)
         {
