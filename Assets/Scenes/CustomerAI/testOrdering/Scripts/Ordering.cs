@@ -1,0 +1,26 @@
+using System.Collections.Generic;
+using UnityEngine;
+using OrderOwner;
+
+public class Ordering : MonoBehaviour
+{
+    [Header("Necessary Components")]
+    public PlayerTrigger player;
+    public CustomerOrder customerScript;
+
+    [Header("Current Orders")]
+    public Queue<Order> orderQueue;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && customerScript && player.checkpointTrigger)
+        {
+            Debug.Log("Success!");
+            if (!customerScript.placed)
+            {
+                orderQueue.Enqueue(customerScript.o);
+                customerScript.placed = true;
+            }
+        }
+    }
+}
