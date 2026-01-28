@@ -17,11 +17,11 @@ namespace OrderOwner //to make the owner struct accessible in other files
     public enum Weight
     {
         None,
-        VerySkinny,
-        Skinny,
-        Normal,
+        VeryHeavy,
         Heavy,
-        VeryHeavy
+        Normal,
+        Skinny,
+        VerySkinny
     };
 
     public enum Personality
@@ -72,3 +72,4 @@ public class CustomerOrder : MonoBehaviour
         }
     }
 }
+
