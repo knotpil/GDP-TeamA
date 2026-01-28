@@ -21,10 +21,14 @@ public class Ordering : MonoBehaviour
                 orderQueue.Enqueue(customerScript.o);
                 customerScript.placed = true;
             }
-            Debug.Log(orderQueue.Peek().h_);
+            Debug.Log(orderQueue.Peek().r_ + orderQueue.Peek().g_ + orderQueue.Peek().b_);
             Debug.Log(orderQueue.Peek().w_);
+            Debug.Log(orderQueue.Peek().hl_);
+            Debug.Log(orderQueue.Peek().s_);
+            Debug.Log(orderQueue.Peek().pattern_);
             Debug.Log(orderQueue.Peek().p_);
         }
     }
 }
+
 
