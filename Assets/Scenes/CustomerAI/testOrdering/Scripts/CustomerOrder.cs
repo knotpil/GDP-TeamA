@@ -4,24 +4,43 @@ using OrderOwner;
 
 namespace OrderOwner //to make the owner struct accessible in other files
 {
-   public enum Hue
+    public enum HairLength 
     {
         None,
-        VeryDark,
-        Dark,
+        //Bald, //commented out since it is a suggestion
+        VeryShort,
+        Short,
         Medium,
-        Light,
-        VeryLight
+        Long,
+        VeryLong
     };
 
     public enum Weight
     {
         None,
-        VeryHeavy,
-        Heavy,
-        Normal,
+        VerySkinny,
         Skinny,
-        VerySkinny
+        Normal,
+        Heavy,
+        VeryHeavy
+    };
+
+    public enum Shine
+    {
+        None,
+        NotShiny,
+        LittleShiny,
+        Shiny,
+        VeryShiny
+    };
+
+    public enum Pattern
+    {
+        Unassigned,
+        None,
+        Spots,
+        Stripes,
+        Calico
     };
 
     public enum Personality
@@ -33,14 +52,18 @@ namespace OrderOwner //to make the owner struct accessible in other files
         Feisty,
         VeryFeisty
     };
+   
     public class Order
     {
         public Order() { }
-        public Hue h_;
         public Weight w_;
+        public HairLength hl_;
+        public Shine s_;
+        public Pattern pattern_;
         public Personality p_;
+        public int r_, g_, b_; //color values
     }
-};
+}
 
 public class CustomerOrder : MonoBehaviour
 {
@@ -54,13 +77,20 @@ public class CustomerOrder : MonoBehaviour
     public Order o = new Order();
     void Start()
     {
-        Hue[] hues = (Hue[])Enum.GetValues(typeof(Hue));
         Weight[] weights = (Weight[])Enum.GetValues(typeof(Weight));
+        HairLength[] hairLengths = (HairLength[])Enum.GetValues(typeof(HairLength));
+        Shine[] shines = (Shine[])Enum.GetValues(typeof(Shine));
+        Pattern[] patterns = (Pattern[])Enum.GetValues(typeof(Pattern));
         Personality[] personalities = (Personality[])Enum.GetValues(typeof(Personality));
 
-        o.h_ = hues[UnityEngine.Random.Range(1, hues.Length - 1)];
-        o.w_ = weights[UnityEngine.Random.Range(1, weights.Length - 1)];
-        o.p_ = personalities[UnityEngine.Random.Range(1, personalities.Length - 1)];
+        o.w_ = weights[UnityEngine.Random.Range(1, weights.Length)];
+        o.hl_ = hairLengths[UnityEngine.Random.Range(1, hairLengths.Length)];
+        o.s_ = shines[UnityEngine.Random.Range(1, shines.Length)];
+        o.pattern_ = patterns[UnityEngine.Random.Range(1, patterns.Length)];
+        o.p_ = personalities[UnityEngine.Random.Range(1, personalities.Length)];
+        o.r_ = UnityEngine.Random.Range(0, 256);
+        o.g_ = UnityEngine.Random.Range(0, 256);
+        o.b_ = UnityEngine.Random.Range(0, 256);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -72,4 +102,5 @@ public class CustomerOrder : MonoBehaviour
         }
     }
 }
+
 
