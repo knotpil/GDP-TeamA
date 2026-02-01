@@ -8,6 +8,9 @@ public class GoToCounter : MonoBehaviour
 
     private NavMeshAgent agent;
 
+    [Header("Reached Destination?")]
+    public bool reached = false;
+
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -24,6 +27,10 @@ public class GoToCounter : MonoBehaviour
         if (target != null && agent.enabled)
         {
             agent.SetDestination(target.position);
+            if(!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            {
+                reached = true;
+            }
         }
     }
 
