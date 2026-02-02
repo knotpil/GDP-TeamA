@@ -98,7 +98,6 @@ public class CustomerOrder : MonoBehaviour
         if (other.CompareTag("CustomerOrderTrigger"))
         {
             checkpoint = other.gameObject;
-            checkpoint.GetComponent<Ordering>().customerScript = this;
         }
     }
 }
