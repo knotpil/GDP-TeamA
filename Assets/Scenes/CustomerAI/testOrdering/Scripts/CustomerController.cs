@@ -1,4 +1,26 @@
+using UnityEngine;
+using UnityEngine.AI;
 
+public class CustomerController : MonoBehaviour
+{
+	private NavMeshAgent agent;
+
+	[Header("Counter")]
+	public Transform counterTarget;
+	private bool counterReached = false;
+	
+	[Header(“Waiting”)]
+	public Transform waitingArea;
+	public bool shouldGoToWaiting = false;
+
+	[Header(“Exiting”)]
+	private Transform exitTarget;
+	public bool shouldLeave = false;
+
+	void Awake()
+	{
+		agent = GetComponent<NavMeshAgent>();
+		if(agent == null) 
 		{
 			Debug.LogWarning(“CustomerController: No NavMeshAgent found on “ + gameObject.name);
 		}
@@ -22,7 +44,7 @@
 	}
 
 	public void SetDestination()
-{
+	{
 		if (counterTarget == null)
 		{
 			Debug.LogWarning(“CustomerController: No counter target assigned.”, this);
@@ -59,4 +81,5 @@
 		{
 			agent.SetDestination(exitTarget.position);
 		}
+	}
 }
