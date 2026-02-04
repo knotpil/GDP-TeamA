@@ -49,14 +49,14 @@ public class LeaveWithOrder : MonoBehaviour
             Debug.Log("LeaveWithOrder: Customer " + customer.name + " going to " + selectedExit.name);
 
             // Tell customer to leave
-            GoToExit exitScript = customer.GetComponent<GoToExit>();
+            CustomerController exitScript = customer.GetComponent<CustomerController>();
             if (exitScript != null)
             {
-                exitScript.LeaveToExit(selectedExit);
+                exitScript.shouldLeave = true;
             }
             else
             {
-                Debug.LogError("LeaveWithOrder: GoToExit script not found on " + customer.name);
+                Debug.LogError("LeaveWithOrder: CustomerController script not found on " + customer.name);
             }
 
             // Remove customer from list

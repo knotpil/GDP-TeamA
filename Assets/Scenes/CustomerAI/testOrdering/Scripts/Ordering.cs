@@ -26,21 +26,21 @@ public class Ordering : MonoBehaviour
                 customerScript.placed = true;
                 
                 // Send customer to waiting area after order is taken
-                GoToWaiting waitingScript = currentCustomer.GetComponent<GoToWaiting>();
+                CustomerController waitingScript = currentCustomer.GetComponent<CustomerController>();
                 if (waitingScript != null)
                 {
                     Debug.Log("Ordering: Sending customer to waiting area");
-                    waitingScript.GoToWaitingArea();
+                    waitingScript.shouldGoToWaiting = true;
                 }
                 else
                 {
-                    Debug.LogError("Ordering: GoToWaiting script not found on " + currentCustomer.name);
+                    Debug.LogError("Ordering: CustomerController script not found on " + currentCustomer.name);
                 }
                 
                 // Only log order details if queue has items
                 if (orderQueue.Count > 0)
                 {
-                    Debug.Log(orderQueue.Peek().r_ + orderQueue.Peek().g_ + orderQueue.Peek().b_);
+                    Debug.Log(orderQueue.Peek().r_ + " " + orderQueue.Peek().g_ + " " + orderQueue.Peek().b_);
                     Debug.Log(orderQueue.Peek().w_);
                     Debug.Log(orderQueue.Peek().hl_);
                     Debug.Log(orderQueue.Peek().s_);
