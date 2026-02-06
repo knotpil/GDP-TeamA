@@ -2,66 +2,84 @@ using UnityEngine;
 
 public class OvenInteract : MonoBehaviour, Interactable
 {
-    //cat currently in the oven
-    private GameObject catInOven = null;
+    //the object currently in the oven
+    private GameObject ovenItem = null;
     [SerializeField] Transform placement;
 
-    // Update is called once per frame
     void Update()
     {
-        if (catInOven != null)
+        //if we got something in the oven, increase its ovenTime var
+        if (ovenItem != null)
         {
-            catInOven.transform.position = placement.position;
-            var features = catInOven.GetComponent<CatFeatures>();
-            features.personality += Time.deltaTime;
+            var timer = ovenItem.GetComponent<CatFeatures>();
+            if(timer) timer.ovenTime += Time.deltaTime;
         }
     }
 
     public void Interact(PlayerInteractor interactor)
     {
+        GameObject heldItem = null;
 
-        GameObject heldCat = null;
-        
+        //interactor has a reference to holding something
         if (interactor.holding != null)
         {
-            if (interactor.holding.gameObject.name == "Cat")
-            {
-                heldCat = interactor.holding.gameObject;
-            }
+            heldItem = interactor.holding.gameObject;
         }
-
-        if (catInOven == null && interactor.holding != null)
+    
+        //oven empty, player holding something
+        if (ovenItem == null && interactor.holding != null)
         {
-            Debug.Log("putting cat in empty oven");
-            catInOven = heldCat;
+            ovenItem = heldItem;
 
+            Rigidbody rb = ovenItem.GetComponent<Rigidbody>();
+            if (rb)
+            {
+                rb.isKinematic = true;
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            ovenItem.transform.position = placement.position;
+            ovenItem.transform.rotation = placement.rotation;
+
+            //calling interact script to make the object act "dropped"
             var dropping = interactor.holding.gameObject.GetComponent<CatInteract>();
             dropping.Interact(interactor);
             dropping.inOven = true;
 
             interactor.holding = null;
-            
+
         }
-        else if (catInOven != null && interactor.holding == null)
+        //oven full, hands empty, taking from oven
+        else if (ovenItem != null && interactor.holding == null)
         {
-            Debug.Log("getting cat from oven");
+            interactor.holding = ovenItem;
+            Rigidbody rb = ovenItem.GetComponent<Rigidbody>();
+            if (rb)
+            {
+                rb.isKinematic = false;
+            }
 
-            interactor.holding = catInOven;
-
+            //calling interact script to make the object act "picked upo"
             var getting = interactor.holding.gameObject.GetComponent<CatInteract>();
             getting.inOven = false;
             getting.Interact(interactor);
 
 
-            catInOven = null;
+            ovenItem = null;
         }
-        else if (catInOven == null && interactor.holding == null)
+
+        //oven empy, hands empty
+        else if (ovenItem == null && interactor.holding == null)
         {
             Debug.Log("no cat, oven empty");
         }
-        else if (catInOven != null && interactor.holding != null)
+
+        //oven full, hands full.
+        else if (ovenItem != null && interactor.holding != null)
         {
             Debug.Log("cat in oven, cat in hands");
         }
+        
     }
 }
