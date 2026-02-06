@@ -31,11 +31,13 @@ public class PickupCube : MonoBehaviour, Interactable
         {
             holderCamera = interactor.playerCamera.transform;
             isHeld = true;
+            interactor.holding = this.gameObject;
 
             rb.useGravity = false;
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.freezeRotation = true;
+            Debug.Log("Holding" + this.gameObject.name);
         }
         else
         {
