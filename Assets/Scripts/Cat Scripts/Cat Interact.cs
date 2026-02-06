@@ -40,7 +40,7 @@ public class CatInteract : MonoBehaviour, Interactable
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.freezeRotation = true;
-            Debug.Log("Picking up" + this.gameObject.name);
+            Debug.Log("Picking up " + this.gameObject.name);
         }
         else
         {
@@ -49,7 +49,7 @@ public class CatInteract : MonoBehaviour, Interactable
 
             rb.useGravity = true;
             //rb.freezeRotation = false;
-            Debug.Log("Dropped" + this.gameObject.name);
+            Debug.Log("Dropped " + this.gameObject.name);
         }
     }
 
