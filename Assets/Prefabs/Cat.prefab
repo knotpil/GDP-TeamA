@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 4001115412781932108}
   m_Layer: 0
   m_Name: Cat
-  m_TagString: Untagged
+  m_TagString: Cat
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -191,6 +191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CatInteract
   holdDistance: 2
   followSpeed: 20
+  inOven: 0
 --- !u!114 &4001115412781932108
 MonoBehaviour:
   m_ObjectHideFlags: 0
