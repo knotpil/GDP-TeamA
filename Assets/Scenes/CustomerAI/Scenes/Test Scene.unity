@@ -2120,6 +2120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
   playerCamera: {fileID: 1472017381}
   interactRange: 3
+  holding: {fileID: 0}
 --- !u!136 &1947819254
 CapsuleCollider:
   m_ObjectHideFlags: 0

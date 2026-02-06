@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System; //for DateTime
 using UnityEngine;
 using OrderOwner;
 
@@ -24,7 +25,15 @@ public class Ordering : MonoBehaviour
             {
                 orderQueue.Enqueue(customerScript.o);
                 customerScript.placed = true;
+
+                Renderer[] customerMat = currentCustomer.GetComponentsInChildren<Renderer>();
+                foreach (Renderer r in customerMat)
+                {
+                    r.material.color = Color.green;
+                }
+                DateTime now = DateTime.UtcNow;
                 
+
                 // Send customer to waiting area after order is taken
                 CustomerController waitingScript = currentCustomer.GetComponent<CustomerController>();
                 if (waitingScript != null)
