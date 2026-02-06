@@ -33,22 +33,25 @@ public class PlayerInteractor : MonoBehaviour
     void interactableCheck()
     {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        RaycastHit hit;
+        RaycastHit[] hits = Physics.RaycastAll(ray, interactRange);
 
-        if (Physics.Raycast(ray, out hit, interactRange))
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (RaycastHit h in hits)
         {
-            // check if obj has the interactable script
-            Interactable interactable = hit.collider.GetComponentInParent<Interactable>();
+            if (holding != null && h.collider.transform.IsChildOf(holding.transform))
+                continue;
 
-           // if it is interactable show interactionText
+            Interactable interactable = h.collider.GetComponentInParent<Interactable>();
             if (interactable != null)
             {
                 interactionText.gameObject.SetActive(true);
                 interactionText.text = "Press E to interact";
                 return;
             }
-        }
 
+            break;
+        }
         // making sure that if nothing is hit, text is hidden!
         interactionText.gameObject.SetActive(false);
     }
@@ -56,15 +59,23 @@ public class PlayerInteractor : MonoBehaviour
     void TryInteract()
     {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        RaycastHit hit;
+        RaycastHit[] hits = Physics.RaycastAll(ray, interactRange);
 
-        if (Physics.Raycast(ray, out hit, interactRange))
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (RaycastHit h in hits)
         {
-            Interactable interactable = hit.collider.GetComponentInParent<Interactable>();
+            if (holding != null && h.collider.transform.IsChildOf(holding.transform))
+                continue;
+
+            Interactable interactable = h.collider.GetComponentInParent<Interactable>();
             if (interactable != null)
             {
                 interactable.Interact(this);
             }
+
+            break;
         }
+
     }
 }

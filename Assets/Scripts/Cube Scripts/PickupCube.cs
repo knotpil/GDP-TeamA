@@ -17,9 +17,15 @@ public class PickupCube : MonoBehaviour, Interactable
     public float maxThrowSpeed = 18f;
     public float extraForwardThrow = 1.25f;
 
+    [Header("Oven Check")]
+    public bool inOven = false;
+
     bool isHeld;
     Transform holderCamera;
     float nextDropAllowedTime;
+
+    PlayerInteractor holderInteractor;
+
 
     Rigidbody rb;
     Collider[] myColliders;
@@ -94,13 +100,16 @@ public class PickupCube : MonoBehaviour, Interactable
         // IMPORTANT: rename this if your interactor uses a different camera field
         holderCamera = interactor.playerCamera.transform;
 
+        holderInteractor = interactor;
+        interactor.holding = this.gameObject;
+
+
         isHeld = true;
         nextDropAllowedTime = Time.time + 0.15f;
 
         rb.useGravity = false;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        rb.isKinematic = true;
 
         // Init throw tracking
         lastTargetPos = holderCamera.position + holderCamera.forward * holdDistance;
@@ -135,6 +144,11 @@ public class PickupCube : MonoBehaviour, Interactable
         }
 
         holderCamera = null;
+
+        if (holderInteractor != null && holderInteractor.holding == this.gameObject)
+            holderInteractor.holding = null;
+        holderInteractor = null;
+
     }
 
     void IgnorePlayerCollisions(PlayerInteractor interactor, bool ignore)
