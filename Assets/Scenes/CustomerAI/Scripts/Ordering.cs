@@ -31,7 +31,10 @@ public class Ordering : MonoBehaviour
                 {
                     r.material.color = Color.green;
                 }
+
                 DateTime now = DateTime.UtcNow;
+                string nowText = now.ToLongTimeString();
+                Debug.Log("Order time: " + nowText);
                 
 
                 // Send customer to waiting area after order is taken
