@@ -17,35 +17,46 @@ public class PickupCube : MonoBehaviour, Interactable
     public float maxThrowSpeed = 18f;
     public float extraForwardThrow = 1.25f;
 
+    [Header("Pickup Cooldown")]
+    public float pickupCooldownAfterDrop = 0.35f;
+
     [Header("Oven Check")]
     public bool inOven = false;
+
+    const int IGNORE_RAYCAST_LAYER = 2;
 
     bool isHeld;
     Transform holderCamera;
     float nextDropAllowedTime;
+    float nextPickupAllowedTime;
 
     PlayerInteractor holderInteractor;
-
 
     Rigidbody rb;
     Collider[] myColliders;
     Collider[] ignoredPlayerColliders;
 
-    // For throw calculation
     Vector3 lastTargetPos;
     Vector3 targetVelocity;
+
+    Transform[] layerTransforms;
+    int[] originalLayers;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         myColliders = GetComponentsInChildren<Collider>(true);
+
+        layerTransforms = GetComponentsInChildren<Transform>(true);
+        originalLayers = new int[layerTransforms.Length];
+        for (int i = 0; i < layerTransforms.Length; i++)
+            originalLayers[i] = layerTransforms[i].gameObject.layer;
     }
 
     void Update()
     {
         if (!isHeld) return;
 
-        // Scroll wheel adjusts hold distance
         float scroll = Input.mouseScrollDelta.y;
         if (scroll != 0f)
         {
@@ -53,7 +64,6 @@ public class PickupCube : MonoBehaviour, Interactable
             holdDistance = Mathf.Clamp(holdDistance, minHoldDistance, maxHoldDistance);
         }
 
-        // Drop even if not looking at the object
         if (Time.time >= nextDropAllowedTime && Input.GetKeyDown(KeyCode.E))
         {
             Drop(applyThrow: true);
@@ -66,7 +76,6 @@ public class PickupCube : MonoBehaviour, Interactable
 
         Vector3 targetPos = holderCamera.position + holderCamera.forward * holdDistance;
 
-        // Estimate "hand" velocity for throwing (frame-rate independent)
         if (Time.deltaTime > 0f)
             targetVelocity = (targetPos - lastTargetPos) / Time.deltaTime;
         else
@@ -82,11 +91,17 @@ public class PickupCube : MonoBehaviour, Interactable
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotT);
     }
 
+    public void ForcePickup(PlayerInteractor interactor)
+    {
+        if (isHeld) return;
+        PickUp(interactor, bypassCooldown: true);
+    }
+
     public void Interact(PlayerInteractor interactor)
     {
         if (!isHeld)
         {
-            PickUp(interactor);
+            PickUp(interactor, bypassCooldown: false);
         }
         else
         {
@@ -95,32 +110,53 @@ public class PickupCube : MonoBehaviour, Interactable
         }
     }
 
-    void PickUp(PlayerInteractor interactor)
+    void SetLayerRecursive(int layer)
     {
-        // IMPORTANT: rename this if your interactor uses a different camera field
+        for (int i = 0; i < layerTransforms.Length; i++)
+            layerTransforms[i].gameObject.layer = layer;
+    }
+
+    void RestoreOriginalLayers()
+    {
+        for (int i = 0; i < layerTransforms.Length; i++)
+            layerTransforms[i].gameObject.layer = originalLayers[i];
+    }
+
+    void PickUp(PlayerInteractor interactor, bool bypassCooldown)
+    {
+        if (!bypassCooldown)
+        {
+            if (Time.time < nextPickupAllowedTime) return;
+            if (inOven) return;
+        }
+
         holderCamera = interactor.playerCamera.transform;
 
         holderInteractor = interactor;
         interactor.holding = this.gameObject;
 
-
         isHeld = true;
         nextDropAllowedTime = Time.time + 0.15f;
 
+        rb.isKinematic = false;
         rb.useGravity = false;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        // Init throw tracking
         lastTargetPos = holderCamera.position + holderCamera.forward * holdDistance;
         targetVelocity = Vector3.zero;
 
         IgnorePlayerCollisions(interactor, true);
+
+        // IMPORTANT: let raycasts go through held object
+        SetLayerRecursive(IGNORE_RAYCAST_LAYER);
     }
 
     void Drop(bool applyThrow)
     {
         isHeld = false;
+
+        nextPickupAllowedTime = Time.time + pickupCooldownAfterDrop;
 
         rb.isKinematic = false;
         rb.useGravity = true;
@@ -129,14 +165,11 @@ public class PickupCube : MonoBehaviour, Interactable
 
         if (applyThrow)
         {
-            // Base throw from how fast the hold point was moving
             Vector3 v = targetVelocity * throwVelocityMultiplier;
 
-            // Add a bit of forward bias so it feels like a "toss"
             if (holderCamera != null)
                 v += holderCamera.forward * extraForwardThrow;
 
-            // Clamp so it doesn't become absurd
             if (v.magnitude > maxThrowSpeed)
                 v = v.normalized * maxThrowSpeed;
 
@@ -149,6 +182,8 @@ public class PickupCube : MonoBehaviour, Interactable
             holderInteractor.holding = null;
         holderInteractor = null;
 
+        // restore layers so it can be interacted with again when not held
+        RestoreOriginalLayers();
     }
 
     void IgnorePlayerCollisions(PlayerInteractor interactor, bool ignore)
@@ -182,5 +217,10 @@ public class PickupCube : MonoBehaviour, Interactable
 
             ignoredPlayerColliders = null;
         }
+    }
+
+    public bool IsHeld
+    {
+        get { return isHeld; }
     }
 }

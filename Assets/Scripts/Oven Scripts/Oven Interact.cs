@@ -60,19 +60,22 @@ public class OvenInteract : MonoBehaviour, Interactable
         else if (ovenItem != null && interactor.holding == null)
         {
             interactor.holding = ovenItem;
+
             Rigidbody rb = ovenItem.GetComponent<Rigidbody>();
             if (rb)
             {
                 rb.isKinematic = false;
             }
 
-            //calling interact script to make the object act "picked upo"
-            var getting = interactor.holding.gameObject.GetComponent<PickupCube>();
-            getting.inOven = false;
-            getting.Interact(interactor);
-
+            var getting = ovenItem.GetComponent<PickupCube>();
+            if (getting != null)
+            {
+                getting.inOven = false;
+                getting.ForcePickup(interactor); 
+            }
 
             ovenItem = null;
+
         }
 
         //oven empy, hands empty

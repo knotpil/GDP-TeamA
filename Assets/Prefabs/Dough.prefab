@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5202567910044064598}
   - component: {fileID: 565256980656184657}
   - component: {fileID: 186279227389177388}
+  - component: {fileID: -3048679496606112773}
   m_Layer: 0
   m_Name: Dough
   m_TagString: Dough
@@ -201,3 +202,17 @@ MonoBehaviour:
   maxThrowSpeed: 18
   extraForwardThrow: 1.25
   inOven: 0
+--- !u!114 &-3048679496606112773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 504612420647950414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027bbb878bb06f74bb7ae949d07b218c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CatFeatures
+  personality: 0.5
+  ovenTime: 0

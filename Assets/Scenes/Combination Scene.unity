@@ -2280,6 +2280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoughManager
   doughPrefab: {fileID: 504612420647950414, guid: 6e4f88ea8fa1f4f4fbef6bf62bbde325, type: 3}
   doughSpawn: {fileID: 37093888}
+  removedFromSpawnDistance: 1000
   baseSize: 0.25
   sizePerUnit: 0.1
   flattenedThickness: 0.18
@@ -2336,7 +2337,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
   playerCamera: {fileID: 1731694398}
-  interactRange: 5
+  interactRange: 3.5
   holding: {fileID: 0}
   interactionText: {fileID: 1003573963}
 --- !u!114 &1987687075
