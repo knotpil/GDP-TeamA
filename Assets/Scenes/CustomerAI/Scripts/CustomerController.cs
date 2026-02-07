@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 public class CustomerController : MonoBehaviour
 {
@@ -22,6 +23,13 @@ public class CustomerController : MonoBehaviour
 	[Header("Customer Regeneration")]
 	public GameObject customerPrefab;
 
+	[Header("Emotions")]
+	public GameObject smokeParticles;
+	private CustomerOrder order;
+	private bool timeToggle = true;
+	private int secondsWaiting = 0;
+	private Renderer[] customerMat;
+
 	void Awake()
 	{
 		agent = GetComponent<NavMeshAgent>();
@@ -29,12 +37,29 @@ public class CustomerController : MonoBehaviour
 		{
 			Debug.LogWarning("CustomerController: No NavMeshAgent found on " + gameObject.name);
 		}
+
+		order = GetComponent<CustomerOrder>();
+		if(order == null)
+		{
+			Debug.LogWarning("CustomerController: Order script not found on " + gameObject.name);
+		}
+
+		customerMat = GetComponentsInChildren<Renderer>();
+		if(customerMat.Length < 5)
+		{
+			Debug.LogWarning("CustomerController: Missing material refs on " + gameObject.name);
+		}
+
+		if (smokeParticles == null)
+		{
+			Debug.LogWarning("CustomerController: Missing anger particles on " + gameObject.name);
+		}
 	}
 
 	void Start()
 	{
 		SetDestination();
-		actualExit = Random.Range(0, 2) == 0 ? exitPoint1 : exitPoint2;
+		actualExit = UnityEngine.Random.Range(0, 2) == 0 ? exitPoint1 : exitPoint2;
 		if(customerPrefab == null)
 		{
 			Debug.LogWarning("CustomerController: Prefab missing, regeneration unavailable on " + gameObject.name);
@@ -49,6 +74,20 @@ public class CustomerController : MonoBehaviour
 			if(!counterReached && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance) 
 			{
 				counterReached = true;
+			}
+
+			if(order.placed && !order.received && timeToggle)
+			{
+				StartCoroutine(timerTick());
+			} 
+			else if (order.received && smokeParticles.activeSelf)
+			{
+				smokeParticles.SetActive(false);
+
+				foreach (Renderer r in customerMat)
+            	{	
+                	r.material.color = Color.white;
+            	}
 			}
 		}
 	}
@@ -118,5 +157,33 @@ public class CustomerController : MonoBehaviour
                 Destroy(gameObject);
             }
 		}
+	}
+
+	public IEnumerator timerTick()
+	{
+		timeToggle = false;
+		yield return new WaitForSeconds(1f);
+		++secondsWaiting;
+
+		if(secondsWaiting == 10)
+		{
+            foreach (Renderer r in customerMat)
+            {
+                r.material.color = Color.yellow;
+            }
+		}
+
+		if(secondsWaiting == 20)
+		{
+            foreach (Renderer r in customerMat)
+            {
+                r.material.color = Color.red;
+            }
+
+			smokeParticles.SetActive(true);
+		}
+
+
+		timeToggle = true;
 	}
 }
