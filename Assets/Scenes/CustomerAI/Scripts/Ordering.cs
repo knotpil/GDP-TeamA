@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System; //for DateTime
 using UnityEngine;
 using OrderOwner;
 
@@ -31,11 +30,6 @@ public class Ordering : MonoBehaviour
                 {
                     r.material.color = Color.green;
                 }
-
-                DateTime now = DateTime.UtcNow;
-                string nowText = now.ToLongTimeString();
-                Debug.Log("Order time: " + nowText);
-                
 
                 // Send customer to waiting area after order is taken
                 CustomerController waitingScript = currentCustomer.GetComponent<CustomerController>();

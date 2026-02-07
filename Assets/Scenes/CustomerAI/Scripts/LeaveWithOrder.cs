@@ -44,6 +44,9 @@ public class LeaveWithOrder : MonoBehaviour
             // Send first customer in the area to exit
             GameObject customer = customersInArea[0];
 
+            //flags that order was placed
+            customer.GetComponent<CustomerOrder>().received = true;
+
             // Randomly choose exit point
             Transform selectedExit = Random.Range(0, 2) == 0 ? exitPoint1 : exitPoint2;
             Debug.Log("LeaveWithOrder: Customer " + customer.name + " going to " + selectedExit.name);

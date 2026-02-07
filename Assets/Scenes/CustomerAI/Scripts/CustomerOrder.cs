@@ -73,6 +73,9 @@ public class CustomerOrder : MonoBehaviour
     [Header("Placed Order?")]
     public bool placed = false;
 
+    [Header("Received Order?")]
+    public bool received = false;
+
     [Header("Order to Place")]
     public Order o = new Order();
     void Start()
