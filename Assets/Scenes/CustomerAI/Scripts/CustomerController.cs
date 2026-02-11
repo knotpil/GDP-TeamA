@@ -131,31 +131,7 @@ public class CustomerController : MonoBehaviour
 		if (shouldLeave)
 		{
 			agent.SetDestination(actualExit.position);
-
-			if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
-            {
-                Debug.Log("CustomerController: Customer reached exit, destroying...");
-				GameObject newCustomer = Instantiate(customerPrefab);
-				if(newCustomer != null)
-				{
-					CustomerController newScript = newCustomer.GetComponent<CustomerController>();
-					if(newScript != null)
-					{
-						newScript.counterTarget = counterTarget;
-						newScript.waitingArea = waitingArea;
-						newScript.exitPoint1 = exitPoint1;
-						newScript.exitPoint2 = exitPoint2;
-						newScript.customerPrefab = customerPrefab;
-					} else
-					{
-						Debug.LogWarning("CustomerController: New customer script missing on " + newCustomer.name);
-					}
-				} else
-				{
-					Debug.LogWarning("CustomerController: New customer instantiation failed on " + gameObject.name);
-				}
-                Destroy(gameObject);
-            }
+            //CustomerDestroyer will handle the rest now!
 		}
 	}
 
@@ -171,6 +147,7 @@ public class CustomerController : MonoBehaviour
             {
                 r.material.color = Color.yellow;
             }
+			order.o.tip_ /= 2;
 		}
 
 		if(secondsWaiting == 20)
@@ -179,7 +156,8 @@ public class CustomerController : MonoBehaviour
             {
                 r.material.color = Color.red;
             }
-
+			
+			order.o.tip_ = 0;
 			smokeParticles.SetActive(true);
 		}
 

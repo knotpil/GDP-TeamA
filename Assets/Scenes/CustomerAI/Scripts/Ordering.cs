@@ -52,6 +52,9 @@ public class Ordering : MonoBehaviour
                     Debug.Log(orderQueue.Peek().s_);
                     Debug.Log(orderQueue.Peek().pattern_);
                     Debug.Log(orderQueue.Peek().p_);
+                    Debug.Log("Order Cost: $" + orderQueue.Peek().cost_);
+                    Debug.Log("Order #" + orderQueue.Peek().num_);
+                    orderQueue.Dequeue(); //dequeued for proper order display (at least for debugging)
                 }
             }
         }

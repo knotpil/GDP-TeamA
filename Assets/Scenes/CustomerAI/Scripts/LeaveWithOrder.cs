@@ -5,12 +5,18 @@ public class LeaveWithOrder : MonoBehaviour
 {
     [Header("Necessary Components")]
     public PlayerTrigger player;
+    private CurrencyManager playerMoney;
 
     [Header("Exit Points")]
     public Transform exitPoint1; // Assign first exit point in Inspector
     public Transform exitPoint2; // Assign second exit point in Inspector
 
     private List<GameObject> customersInArea = new List<GameObject>();
+
+    private void Awake()
+    {
+        playerMoney = player.GetComponentInParent<CurrencyManager>();
+    }
 
     private void Update()
     {
@@ -44,8 +50,10 @@ public class LeaveWithOrder : MonoBehaviour
             // Send first customer in the area to exit
             GameObject customer = customersInArea[0];
 
-            //flags that order was placed
+            //flags that order was placed and pays player
             customer.GetComponent<CustomerOrder>().received = true;
+            CustomerOrder orderScript = customer.GetComponent<CustomerOrder>();
+            playerMoney.payment(orderScript.o.cost_ + orderScript.o.tip_);
 
             // Randomly choose exit point
             Transform selectedExit = Random.Range(0, 2) == 0 ? exitPoint1 : exitPoint2;
