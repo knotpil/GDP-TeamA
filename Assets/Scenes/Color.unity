@@ -349,6 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5b9a12306784343ab615e9b9c25ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorButton
+  colorPad: {fileID: 0}
 --- !u!1 &190961612
 GameObject:
   m_ObjectHideFlags: 0
@@ -828,6 +829,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5b9a12306784343ab615e9b9c25ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorButton
+  colorPad: {fileID: 0}
 --- !u!1 &373443581
 GameObject:
   m_ObjectHideFlags: 0
@@ -1589,6 +1591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5b9a12306784343ab615e9b9c25ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorButton
+  colorPad: {fileID: 0}
 --- !u!1 &588800892
 GameObject:
   m_ObjectHideFlags: 0
@@ -1748,6 +1751,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5b9a12306784343ab615e9b9c25ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorButton
+  colorPad: {fileID: 0}
 --- !u!1 &606132195
 GameObject:
   m_ObjectHideFlags: 0
@@ -2046,6 +2050,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1326148940715714953, guid: 538a2628e9d0ffc4c864cedd2052bdab, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1424270503894236206, guid: 538a2628e9d0ffc4c864cedd2052bdab, type: 3}
+      propertyPath: furThickness
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7727884444795003141, guid: 538a2628e9d0ffc4c864cedd2052bdab, type: 3}
@@ -2579,6 +2587,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5b9a12306784343ab615e9b9c25ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorButton
+  colorPad: {fileID: 0}
 --- !u!1 &992980271
 GameObject:
   m_ObjectHideFlags: 0
@@ -2888,8 +2897,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1068198751}
   - component: {fileID: 1068198752}
+  - component: {fileID: 1068198753}
   m_Layer: 0
-  m_Name: Attach
+  m_Name: ColorPad
   m_TagString: Attach
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2931,6 +2941,19 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1068198753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068198750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea396fcd22caee74998e497c4c60b4ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorPad
+  doughShader: {fileID: 0}
 --- !u!1 &1095158045
 GameObject:
   m_ObjectHideFlags: 0
@@ -4920,6 +4943,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5b9a12306784343ab615e9b9c25ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorButton
+  colorPad: {fileID: 0}
 --- !u!1 &1950529659
 GameObject:
   m_ObjectHideFlags: 0

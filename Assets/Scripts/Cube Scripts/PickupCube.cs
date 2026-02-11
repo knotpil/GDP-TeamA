@@ -64,6 +64,11 @@ public class PickupCube : MonoBehaviour, Interactable
         {
             Drop(false);
             transform.position = other.transform.position;
+            ColorPad reference = other.gameObject.GetComponent<ColorPad>();
+            if (reference != null) {
+                ChatShaderCtrl shdr = GetComponent<ChatShaderCtrl>();
+                reference.doughShader = shdr;
+            }
             rb.constraints = RigidbodyConstraints.FreezePosition;
         }
     }

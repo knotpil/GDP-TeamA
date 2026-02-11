@@ -212,6 +212,6 @@ MonoBehaviour:
   shellGravity: 0.1
   taperExponent: 1.5
   furDensity: 100
-  furThickness: 1
+  furThickness: 0
   noiseScale: 0.03
   mesh: {fileID: 0}
