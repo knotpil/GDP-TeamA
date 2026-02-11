@@ -21,6 +21,9 @@ public class PickupCube : MonoBehaviour, Interactable
     Transform holderCamera;
     float nextDropAllowedTime;
 
+    float snapDisableUntil = 0f;
+
+
     Rigidbody rb;
     Collider[] myColliders;
     Collider[] ignoredPlayerColliders;
@@ -38,6 +41,7 @@ public class PickupCube : MonoBehaviour, Interactable
     void Update()
     {
         if (!isHeld) return;
+        
 
         // Scroll wheel adjusts hold distance
         float scroll = Input.mouseScrollDelta.y;
@@ -53,6 +57,25 @@ public class PickupCube : MonoBehaviour, Interactable
             Drop(applyThrow: true);
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Attach") && isHeld && Time.time > snapDisableUntil)
+        {
+            Drop(false);
+            transform.position = other.transform.position;
+            rb.constraints = RigidbodyConstraints.FreezePosition;
+        }
+    }
+
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (other.CompareTag("Attach") && onTrigger)
+    //    {
+    //        onTrigger = false;
+
+    //    }
+    //}
 
     void LateUpdate()
     {
@@ -80,6 +103,8 @@ public class PickupCube : MonoBehaviour, Interactable
     {
         if (!isHeld)
         {
+            rb.constraints = RigidbodyConstraints.None;
+            snapDisableUntil = Time.time + 0.25f;
             PickUp(interactor);
         }
         else
@@ -101,6 +126,8 @@ public class PickupCube : MonoBehaviour, Interactable
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.isKinematic = true;
+
+        Debug.Log("Inside pickup");
 
         // Init throw tracking
         lastTargetPos = holderCamera.position + holderCamera.forward * holdDistance;

@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 5143577829579378074}
   - component: {fileID: 5049299813177394360}
   - component: {fileID: 413331734214579934}
+  - component: {fileID: 2939901378653188188}
+  - component: {fileID: 1424270503894236206}
   m_Layer: 0
   m_Name: GabiDough
   m_TagString: Untagged
@@ -127,7 +129,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickupCube
   holdDistance: 2
-  followSpeed: 20
+  minHoldDistance: 0.75
+  maxHoldDistance: 4.5
+  scrollSpeed: 1.25
+  positionSharpness: 25
+  rotationSharpness: 25
+  throwVelocityMultiplier: 1
+  maxThrowSpeed: 18
+  extraForwardThrow: 1.25
 --- !u!54 &413331734214579934
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -155,3 +164,54 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2939901378653188188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7727884444795003141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027bbb878bb06f74bb7ae949d07b218c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CatFeatures
+  personality: 0.5
+  ovenTime: 0
+--- !u!114 &1424270503894236206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7727884444795003141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b15bb7d8dd2445c29a28f103d0679cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChatShaderCtrl
+  baseColor: {r: 0.0627451, g: 0.44705883, b: 0.25490198, a: 1}
+  stripeColor: {r: 0, g: 0, b: 0, a: 1}
+  stripeWidth: 0
+  stripeBlend: 0
+  stripeOffset: 0
+  stripeCount: 0
+  stripeDirection: {x: 0, y: 1, z: 0, w: 0}
+  stripeSpacing: 0
+  waveFrequency: 0
+  waveStrength: 0
+  spotColor: {r: 0, g: 0, b: 0, a: 1}
+  spotCount: 0
+  spotSize: 0
+  spotSmooth: 0
+  spotRandomness: 0
+  shellMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  shellMaterial: {fileID: 2100000, guid: 5f2294638362f4ffba0938a3065f2be4, type: 2}
+  shellCount: 4
+  shellLength: 0.1
+  shellGravity: 0.1
+  taperExponent: 1.5
+  furDensity: 100
+  furThickness: 1
+  noiseScale: 0.03
+  mesh: {fileID: 0}
