@@ -137,6 +137,7 @@ MonoBehaviour:
   throwVelocityMultiplier: 1
   maxThrowSpeed: 18
   extraForwardThrow: 1.25
+  inOven: 0
 --- !u!54 &413331734214579934
 Rigidbody:
   m_ObjectHideFlags: 0

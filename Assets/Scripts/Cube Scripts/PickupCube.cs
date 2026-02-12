@@ -28,6 +28,8 @@ public class PickupCube : MonoBehaviour, Interactable
     Collider[] myColliders;
     Collider[] ignoredPlayerColliders;
 
+    public bool inOven = false;
+
     // For throw calculation
     Vector3 lastTargetPos;
     Vector3 targetVelocity;
@@ -40,6 +42,12 @@ public class PickupCube : MonoBehaviour, Interactable
 
     void Update()
     {
+        if (inOven)
+        {
+            var timer = gameObject.GetComponent<CatFeatures>();
+            if (timer) { timer.ovenTime += Time.deltaTime; }
+        }
+
         if (!isHeld) return;
         
 
@@ -64,23 +72,21 @@ public class PickupCube : MonoBehaviour, Interactable
         {
             Drop(false);
             transform.position = other.transform.position;
-            ColorPad reference = other.gameObject.GetComponent<ColorPad>();
-            if (reference != null) {
+            ColorPad colRef = other.gameObject.GetComponent<ColorPad>();
+            if (colRef != null) {
                 ChatShaderCtrl shdr = GetComponent<ChatShaderCtrl>();
-                reference.doughShader = shdr;
+                colRef.doughShader = shdr;
+            }
+            OvenInteract ovRef = other.gameObject.GetComponent<OvenInteract>();
+            if (ovRef != null) 
+            {
+                inOven = true;
+                
             }
             rb.constraints = RigidbodyConstraints.FreezePosition;
         }
     }
 
-    //private void OnTriggerExit(Collider other)
-    //{
-    //    if (other.CompareTag("Attach") && onTrigger)
-    //    {
-    //        onTrigger = false;
-
-    //    }
-    //}
 
     void LateUpdate()
     {
@@ -125,14 +131,13 @@ public class PickupCube : MonoBehaviour, Interactable
         holderCamera = interactor.playerCamera.transform;
 
         isHeld = true;
+        inOven = false;
         nextDropAllowedTime = Time.time + 0.15f;
 
         rb.useGravity = false;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.isKinematic = true;
-
-        Debug.Log("Inside pickup");
 
         // Init throw tracking
         lastTargetPos = holderCamera.position + holderCamera.forward * holdDistance;
