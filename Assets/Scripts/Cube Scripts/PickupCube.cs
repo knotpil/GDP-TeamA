@@ -21,9 +21,14 @@ public class PickupCube : MonoBehaviour, Interactable
     Transform holderCamera;
     float nextDropAllowedTime;
 
+    float snapDisableUntil = 0f;
+
+
     Rigidbody rb;
     Collider[] myColliders;
     Collider[] ignoredPlayerColliders;
+
+    public bool inOven = false;
 
     // For throw calculation
     Vector3 lastTargetPos;
@@ -37,7 +42,14 @@ public class PickupCube : MonoBehaviour, Interactable
 
     void Update()
     {
+        if (inOven)
+        {
+            var timer = gameObject.GetComponent<CatFeatures>();
+            if (timer) { timer.ovenTime += Time.deltaTime; }
+        }
+
         if (!isHeld) return;
+        
 
         // Scroll wheel adjusts hold distance
         float scroll = Input.mouseScrollDelta.y;
@@ -53,6 +65,28 @@ public class PickupCube : MonoBehaviour, Interactable
             Drop(applyThrow: true);
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Attach") && isHeld && Time.time > snapDisableUntil)
+        {
+            Drop(false);
+            transform.position = other.transform.position;
+            ColorPad colRef = other.gameObject.GetComponent<ColorPad>();
+            if (colRef != null) {
+                ChatShaderCtrl shdr = GetComponent<ChatShaderCtrl>();
+                colRef.doughShader = shdr;
+            }
+            OvenInteract ovRef = other.gameObject.GetComponent<OvenInteract>();
+            if (ovRef != null) 
+            {
+                inOven = true;
+                
+            }
+            rb.constraints = RigidbodyConstraints.FreezePosition;
+        }
+    }
+
 
     void LateUpdate()
     {
@@ -80,6 +114,8 @@ public class PickupCube : MonoBehaviour, Interactable
     {
         if (!isHeld)
         {
+            rb.constraints = RigidbodyConstraints.None;
+            snapDisableUntil = Time.time + 0.25f;
             PickUp(interactor);
         }
         else
@@ -95,6 +131,7 @@ public class PickupCube : MonoBehaviour, Interactable
         holderCamera = interactor.playerCamera.transform;
 
         isHeld = true;
+        inOven = false;
         nextDropAllowedTime = Time.time + 0.15f;
 
         rb.useGravity = false;

@@ -35,8 +35,11 @@ public class PlayerInteractor : MonoBehaviour
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, interactRange))
+        //raycast ignores triggers
+        if (Physics.Raycast(ray, out hit, interactRange, ~0, QueryTriggerInteraction.Ignore))
         {
+
+
             // check if obj has the interactable script
             Interactable interactable = hit.collider.GetComponentInParent<Interactable>();
 
@@ -61,7 +64,7 @@ public class PlayerInteractor : MonoBehaviour
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, interactRange))
+        if (Physics.Raycast(ray, out hit, interactRange, ~0, QueryTriggerInteraction.Ignore))
         {
             Interactable interactable = hit.collider.GetComponentInParent<Interactable>();
             if (interactable != null)
