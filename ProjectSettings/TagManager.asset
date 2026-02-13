@@ -6,7 +6,10 @@ TagManager:
   tags:
   - Dough
   - Cat
-  - Attach
+  - CustomerOrderTrigger
+  - PlayerOrderTrigger
+  - Customer
+  - CustomerSmoke
   layers:
   - Default
   - TransparentFX

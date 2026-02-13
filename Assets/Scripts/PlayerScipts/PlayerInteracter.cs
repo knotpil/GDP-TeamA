@@ -53,7 +53,10 @@ public class PlayerInteractor : MonoBehaviour
         }
 
         // making sure that if nothing is hit, text is hidden!
-        interactionText.gameObject.SetActive(false);
+        if(interactionText != null)
+        {
+            interactionText.gameObject.SetActive(false);
+        }
     }
 
     void TryInteract()
