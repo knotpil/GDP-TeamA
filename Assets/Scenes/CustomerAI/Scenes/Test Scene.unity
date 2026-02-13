@@ -893,6 +893,7 @@ GameObject:
   - component: {fileID: 797596108}
   - component: {fileID: 797596107}
   - component: {fileID: 797596106}
+  - component: {fileID: 797596110}
   m_Layer: 0
   m_Name: EndPoint (1)
   m_TagString: Untagged
@@ -993,6 +994,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &797596110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797596105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 791ef76da6882704188f26bfea536556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomerDestroyer
 --- !u!1 &962770386
 GameObject:
   m_ObjectHideFlags: 0
@@ -1842,6 +1855,7 @@ GameObject:
   - component: {fileID: 1745412929}
   - component: {fileID: 1745412928}
   - component: {fileID: 1745412927}
+  - component: {fileID: 1745412931}
   m_Layer: 0
   m_Name: EndPoint
   m_TagString: Untagged
@@ -1942,6 +1956,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1745412931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745412926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 791ef76da6882704188f26bfea536556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomerDestroyer
 --- !u!1 &1947819246
 GameObject:
   m_ObjectHideFlags: 0
@@ -1959,6 +1985,7 @@ GameObject:
   - component: {fileID: 1947819253}
   - component: {fileID: 1947819254}
   - component: {fileID: 1947819255}
+  - component: {fileID: 1947819256}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2158,6 +2185,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTrigger
   checkpointTrigger: 0
+--- !u!114 &1947819256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947819246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4027274bd149bea4d9d64ede22804f1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CurrencyManager
 --- !u!1 &1967242357
 GameObject:
   m_ObjectHideFlags: 0
