@@ -16,7 +16,8 @@ public class CustomerController : MonoBehaviour
 	private bool counterReached = false;
 	
 	[Header("Waiting")]
-	public Transform waitingArea;
+	public Transform[] waitingSpots; // Array of 3 waiting positions
+	public Transform assignedWaitingSpot; // Which waiting spot this customer is assigned to
 	public bool shouldGoToWaiting = false;
 
 	[Header("Exiting")]
@@ -140,9 +141,9 @@ public class CustomerController : MonoBehaviour
 			return;
 		}
 
-		if (waitingArea == null)
+		if (waitingSpots == null || waitingSpots.Length == 0)
 		{
-			Debug.LogWarning("CustomerController: No waiting area assigned.", this);
+			Debug.LogWarning("CustomerController: No waiting spots assigned.", this);
 			return;
 		}
 
@@ -176,9 +177,41 @@ public class CustomerController : MonoBehaviour
 			{
 				queueManager.RemoveCustomerFromQueue(this);
 				inQueue = false;
-				Debug.Log($"CustomerController: {gameObject.name} leaving queue for waiting area");
+				//Debug.Log($"CustomerController: {gameObject.name} leaving queue for waiting area");
 			}
-			agent.SetDestination(waitingArea.position);
+			
+			// Pick an available waiting spot if not assigned yet
+			if(assignedWaitingSpot == null && waitingSpots.Length > 0)
+			{
+				// Find all available spots
+				System.Collections.Generic.List<Transform> availableSpots = new System.Collections.Generic.List<Transform>();
+				foreach(Transform spot in waitingSpots)
+				{
+					LeaveWithOrder leaveScript = spot.GetComponent<LeaveWithOrder>();
+					if(leaveScript != null && !leaveScript.isOccupied)
+					{
+						availableSpots.Add(spot);
+					}
+				}
+				
+				// Pick a random available spot
+				if(availableSpots.Count > 0)
+				{
+					int randomIndex = Random.Range(0, availableSpots.Count);
+					assignedWaitingSpot = availableSpots[randomIndex];
+					//Debug.Log($"CustomerController: {gameObject.name} assigned to {assignedWaitingSpot.name}");
+				}
+				else
+				{
+					Debug.LogWarning($"CustomerController: {gameObject.name} - All waiting spots occupied! Waiting...");
+				}
+			}
+			
+			// Go to assigned spot
+			if(assignedWaitingSpot != null)
+			{
+				agent.SetDestination(assignedWaitingSpot.position);
+			}
 		}
 
 		if (shouldLeave)
@@ -230,13 +263,13 @@ public class CustomerController : MonoBehaviour
 	public void AssignQueuePosition(Transform queuePosition)
 	{
 		currentQueuePosition = queuePosition;
-		Debug.Log($"CustomerController: {gameObject.name} assigned to queue position {queuePosition.name}");
+		//Debug.Log($"CustomerController: {gameObject.name} assigned to queue position {queuePosition.name}");
 		
 		// If this is the front position (position 0), mark as reached counter
 		if(queuePosition != null && queuePosition.name.Contains("QueuePosition_0"))
 		{
 			counterReached = true;
-			Debug.Log($"CustomerController: {gameObject.name} reached front of queue (counter)");
+			//Debug.Log($"CustomerController: {gameObject.name} reached front of queue (counter)");
 		}
 		else
 		{

@@ -27,8 +27,8 @@ public class CustomerSpawner : MonoBehaviour
     [Tooltip("Counter target to assign to spawned customers")]
     public Transform counterTarget;
     
-    [Tooltip("Waiting area to assign to spawned customers")]
-    public Transform waitingArea;
+    [Tooltip("Array of 3 waiting spots where customers can wait")]
+    public Transform[] waitingSpots;
     
     [Tooltip("Exit points to assign to spawned customers")]
     public Transform exitPoint1;
@@ -119,7 +119,7 @@ public class CustomerSpawner : MonoBehaviour
         {
             controller.queueManager = queueManager;
             controller.counterTarget = counterTarget;
-            controller.waitingArea = waitingArea;
+            controller.waitingSpots = waitingSpots;
             controller.exitPoint1 = exitPoint1;
             controller.exitPoint2 = exitPoint2;
             controller.customerPrefab = customerPrefab;

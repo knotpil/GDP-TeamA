@@ -25,11 +25,11 @@ public class CustomerDestroyer : MonoBehaviour
 					if(newScript != null)
 					{
 						newScript.counterTarget = oldScript.counterTarget;
-						newScript.waitingArea = oldScript.waitingArea;
+						newScript.waitingSpots = oldScript.waitingSpots;
 						newScript.exitPoint1 = oldScript.exitPoint1;
 						newScript.exitPoint2 = oldScript.exitPoint2;
 						newScript.customerPrefab = oldScript.customerPrefab;
-						newScript.queueManager = oldScript.queueManager; // Pass queue manager reference
+						newScript.queueManager = oldScript.queueManager;
 						newOrderScript.o.num_ = oldOrderScript.o.num_ + 1;
 					} 
 					else

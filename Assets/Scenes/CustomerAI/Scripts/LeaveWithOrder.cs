@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Put this script on the WAITING SPOT (where customer waits).
+/// This GameObject should have a trigger collider that detects customers.
+/// </summary>
 public class LeaveWithOrder : MonoBehaviour
 {
     [Header("Necessary Components")]
@@ -8,37 +12,53 @@ public class LeaveWithOrder : MonoBehaviour
     private CurrencyManager playerMoney;
 
     [Header("Exit Points")]
-    public Transform exitPoint1; // Assign first exit point in Inspector
-    public Transform exitPoint2; // Assign second exit point in Inspector
+    public Transform exitPoint1;
+    public Transform exitPoint2;
+    
+    [Header("Player Checkpoint")]
+    [Tooltip("The player checkpoint GameObject that corresponds to THIS waiting spot")]
+    public GameObject playerCheckpointObject;
+    
+    private PlayerCheckpointTrigger playerCheckpoint;
 
-    private List<GameObject> customersInArea = new List<GameObject>();
-    private PlayerTriggerWaiting waitingTrigger;
+    private GameObject currentCustomer;
+    private CustomerOrder currentCustomerOrder; // Cache the CustomerOrder component
+    private CustomerController currentCustomerController; // Cache the CustomerController component
+    public bool isOccupied = false; // Tracks if a customer is currently at this spot
 
     private void Awake()
     {
         playerMoney = player.GetComponentInParent<CurrencyManager>();
-        // Get reference to this checkpoint's trigger component
-        waitingTrigger = GetComponent<PlayerTriggerWaiting>();
         
-        //Debug.Log($"LeaveWithOrder: Initialized on {gameObject.name}");
-        //Debug.Log($"LeaveWithOrder: PlayerTriggerWaiting component found: {waitingTrigger != null}");
-        //Debug.Log($"LeaveWithOrder: Player reference assigned: {player != null}");
+        //Debug.Log($"LeaveWithOrder ({gameObject.name}): Awake called");
+        //Debug.Log($"  - playerCheckpointObject assigned: {(playerCheckpointObject != null ? playerCheckpointObject.name : "NULL")}");
+        
+        // Get the PlayerCheckpointTrigger component from the assigned GameObject
+        if (playerCheckpointObject != null)
+        {
+            playerCheckpoint = playerCheckpointObject.GetComponent<PlayerCheckpointTrigger>();
+            if (playerCheckpoint == null)
+            {
+                Debug.LogError($"LeaveWithOrder on {gameObject.name}: Player checkpoint object doesn't have PlayerCheckpointTrigger script!");
+            }
+            //else
+            //{
+            //    Debug.Log($"LeaveWithOrder on {gameObject.name}: Successfully found PlayerCheckpointTrigger component");
+            //}
+        }
+        else
+        {
+            Debug.LogWarning($"LeaveWithOrder on {gameObject.name}: No player checkpoint assigned!");
+        }
     }
 
     private void Update()
     {
-        // Check if player is in waiting checkpoint (supports both detection methods)
-        bool playerInWaitingCheckpoint = (player != null && player.isInWaitingCheckpoint) || 
-                                          (waitingTrigger != null && waitingTrigger.waitingCheckpointTrigger);
+        // Check if player is at the corresponding player checkpoint
+        bool playerAtCheckpoint = (playerCheckpoint != null && playerCheckpoint.playerIsHere);
         
-        // Debug: Check E key press
-        //if (Input.GetKeyDown(KeyCode.E))
-        //{
-        //    Debug.Log($"LeaveWithOrder: E pressed - Customers in area: {customersInArea.Count}, Player in checkpoint: {playerInWaitingCheckpoint}");
-        //}
-        
-        // Only give orders when player is in the WAITING checkpoint
-        if (Input.GetKeyDown(KeyCode.E) && customersInArea.Count > 0 && playerInWaitingCheckpoint)
+        // Only give order when player is at the RIGHT checkpoint and there's a customer here
+        if (Input.GetKeyDown(KeyCode.E) && currentCustomer != null && playerAtCheckpoint)
         {
             if (exitPoint1 == null || exitPoint2 == null)
             {
@@ -46,80 +66,67 @@ public class LeaveWithOrder : MonoBehaviour
                 return;
             }
 
-            // Get first customer in the area
-            GameObject customer = customersInArea[0];
-            
-            // Only send customer to exit if they've placed order and are in waiting area
-            CustomerOrder orderScript = customer.GetComponent<CustomerOrder>();
-            CustomerController controller = customer.GetComponent<CustomerController>();
-            
-            if (orderScript == null || !orderScript.placed)
-            {
-                Debug.Log("LeaveWithOrder: Customer hasn't placed order yet, ignoring");
-                return;
-            }
-            
-            if (controller != null && !controller.shouldGoToWaiting)
-            {
-                Debug.Log("LeaveWithOrder: Customer isn't in waiting area yet, ignoring");
-                return;
-            }
-            
-            Debug.Log("LeaveWithOrder: Sending customer to exit!");
+            // Use cached components (already verified in OnTriggerEnter)
+            //Debug.Log("LeaveWithOrder: Sending customer to exit!");
 
             //flags that order was received and pays player
-            orderScript.received = true;
-            playerMoney.payment(orderScript.o.cost_ + orderScript.o.tip_);
+            currentCustomerOrder.received = true;
+            playerMoney.payment(currentCustomerOrder.o.cost_ + currentCustomerOrder.o.tip_);
 
             // Randomly choose exit point
             Transform selectedExit = Random.Range(0, 2) == 0 ? exitPoint1 : exitPoint2;
-            Debug.Log("LeaveWithOrder: Customer " + customer.name + " going to " + selectedExit.name);
+            //Debug.Log("LeaveWithOrder: Customer " + currentCustomer.name + " going to " + selectedExit.name);
 
             // Tell customer to leave
-            if (controller != null)
-            {
-                controller.shouldLeave = true;
-            }
-            else
-            {
-                Debug.LogError("LeaveWithOrder: CustomerController script not found on " + customer.name);
-            }
+            currentCustomerController.shouldLeave = true;
 
-            // Remove customer from list
-            customersInArea.Remove(customer);
+            // Clear customer and cache
+            currentCustomer = null;
+            currentCustomerOrder = null;
+            currentCustomerController = null;
+            isOccupied = false; // Mark spot as available
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Detect when a customer enters the waiting checkpoint
-        if (other.CompareTag("Customer"))
+        // Detect when a customer enters THE CORRESPONDING waiting spot
+        if (other.CompareTag("Customer") && currentCustomer == null)
         {
             CustomerOrder orderScript = other.GetComponent<CustomerOrder>();
             CustomerController controller = other.GetComponent<CustomerController>();
             
-            //Debug.Log($"LeaveWithOrder: Customer {other.gameObject.name} entering - Order placed: {orderScript?.placed}, Going to waiting: {controller?.shouldGoToWaiting}");
-            
-            // Only add to waiting area if they've placed order and are going to waiting
-            if (orderScript != null && orderScript.placed && controller != null && controller.shouldGoToWaiting && !customersInArea.Contains(other.gameObject))
+            // Only add if they've placed order, are going to waiting, AND this is their assigned spot
+            if (orderScript != null && orderScript.placed && controller != null && controller.shouldGoToWaiting)
             {
-                customersInArea.Add(other.gameObject);
-                //Debug.Log("LeaveWithOrder: Customer " + other.gameObject.name + " ADDED to waiting area (Total: " + customersInArea.Count + ")");
+                // Check if THIS waiting spot is the one assigned to the customer
+                if (controller.assignedWaitingSpot == transform)
+                {
+                    // Cache customer and components
+                    currentCustomer = other.gameObject;
+                    currentCustomerOrder = orderScript;
+                    currentCustomerController = controller;
+                    isOccupied = true; // Mark spot as occupied
+                    //Debug.Log($"LeaveWithOrder ({gameObject.name}): Customer {other.gameObject.name} arrived at THEIR assigned waiting spot");
+                }
+                //else
+                //{
+                //    Debug.Log($"LeaveWithOrder ({gameObject.name}): Customer {other.gameObject.name} passed through but not assigned here (assigned to {controller.assignedWaitingSpot?.name})");
+                //}
             }
-            //else if (!customersInArea.Contains(other.gameObject))
-            //{
-            //    Debug.Log("LeaveWithOrder: Customer " + other.gameObject.name + " entered but not in waiting state (not added)");
-            //}
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
         // Remove customer when they leave
-        if (other.CompareTag("Customer") && customersInArea.Contains(other.gameObject))
+        if (other.CompareTag("Customer") && other.gameObject == currentCustomer)
         {
-            customersInArea.Remove(other.gameObject);
-            Debug.Log("LeaveWithOrder: Customer left checkpoint");
+            currentCustomer = null;
+            currentCustomerOrder = null;
+            currentCustomerController = null;
+            isOccupied = false; // Mark spot as available
+            //Debug.Log("LeaveWithOrder: Customer left waiting spot");
         }
     }
 }
