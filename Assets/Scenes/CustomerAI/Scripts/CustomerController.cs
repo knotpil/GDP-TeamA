@@ -6,6 +6,11 @@ public class CustomerController : MonoBehaviour
 {
 	private NavMeshAgent agent;
 
+	[Header("Queue System")]
+	public CustomerQueueManager queueManager;
+	private Transform currentQueuePosition;
+	private bool inQueue = false;
+
 	[Header("Counter")]
 	public Transform counterTarget;
 	private bool counterReached = false;
@@ -58,11 +63,32 @@ public class CustomerController : MonoBehaviour
 
 	void Start()
 	{
-		SetDestination();
 		actualExit = UnityEngine.Random.Range(0, 2) == 0 ? exitPoint1 : exitPoint2;
 		if(customerPrefab == null)
 		{
 			Debug.LogWarning("CustomerController: Prefab missing, regeneration unavailable on " + gameObject.name);
+		}
+
+		// Register with queue manager
+		if(queueManager != null)
+		{
+			bool added = queueManager.AddCustomerToQueue(this);
+			if(added)
+			{
+				inQueue = true;
+				Debug.Log($"CustomerController: {gameObject.name} successfully added to queue system");
+			}
+			else
+			{
+				Debug.LogWarning("CustomerController: Could not add to queue, using old behavior on " + gameObject.name);
+				SetDestination();
+			}
+		}
+		else
+		{
+			Debug.LogWarning($"CustomerController: {gameObject.name} has no queue manager assigned, using old counter behavior");
+			// Fallback to old behavior if no queue manager
+			SetDestination();
 		}
 	}
 
@@ -71,9 +97,23 @@ public class CustomerController : MonoBehaviour
 		if (agent.enabled)
 		{
 			SetDestination();
+			
+			// Only set counterReached for non-queue customers or when at front of queue
 			if(!counterReached && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance) 
 			{
-				counterReached = true;
+				// If using queue system, only mark as reached if at position 0
+				if(inQueue && currentQueuePosition != null)
+				{
+					if(currentQueuePosition.name.Contains("QueuePosition_0"))
+					{
+						counterReached = true;
+					}
+				}
+				else if(!inQueue)
+				{
+					// Old behavior - reaching counter target
+					counterReached = true;
+				}
 			}
 
 			if(order.placed && !order.received && timeToggle)
@@ -118,18 +158,37 @@ public class CustomerController : MonoBehaviour
 			return;
 		}
 
-		if(!counterReached)
+		// If in queue system, go to assigned queue position
+		if(inQueue && currentQueuePosition != null && !counterReached && !shouldGoToWaiting)
 		{
+			agent.SetDestination(currentQueuePosition.position);
+		}
+		else if(!counterReached && !inQueue && !shouldGoToWaiting)
+		{
+			// Fallback to old counter target behavior
 			agent.SetDestination(counterTarget.position);
 		}
 
 	 	if (shouldGoToWaiting && !shouldLeave)
 		{
+			// Remove from queue when going to waiting area so next customer can advance
+			if(inQueue && queueManager != null)
+			{
+				queueManager.RemoveCustomerFromQueue(this);
+				inQueue = false;
+				Debug.Log($"CustomerController: {gameObject.name} leaving queue for waiting area");
+			}
 			agent.SetDestination(waitingArea.position);
 		}
 
 		if (shouldLeave)
 		{
+			// Remove from queue when leaving
+			if(inQueue && queueManager != null)
+			{
+				queueManager.RemoveCustomerFromQueue(this);
+				inQueue = false;
+			}
 			agent.SetDestination(actualExit.position);
             //CustomerDestroyer will handle the rest now!
 		}
@@ -163,5 +222,25 @@ public class CustomerController : MonoBehaviour
 
 
 		timeToggle = true;
+	}
+
+	/// <summary>
+	/// Called by CustomerQueueManager to assign this customer a position in the queue
+	/// </summary>
+	public void AssignQueuePosition(Transform queuePosition)
+	{
+		currentQueuePosition = queuePosition;
+		Debug.Log($"CustomerController: {gameObject.name} assigned to queue position {queuePosition.name}");
+		
+		// If this is the front position (position 0), mark as reached counter
+		if(queuePosition != null && queuePosition.name.Contains("QueuePosition_0"))
+		{
+			counterReached = true;
+			Debug.Log($"CustomerController: {gameObject.name} reached front of queue (counter)");
+		}
+		else
+		{
+			counterReached = false;
+		}
 	}
 }
