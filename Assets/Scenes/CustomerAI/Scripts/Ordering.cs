@@ -15,13 +15,17 @@ public class Ordering : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && currentCustomer != null && player.checkpointTrigger)
+        // Only take orders when player is in the ORDERING checkpoint
+        if (Input.GetKeyDown(KeyCode.E) && currentCustomer != null && player.isInOrderingCheckpoint)
         {
-            Debug.Log("Success! Taking order from " + currentCustomer.name);
-            
             CustomerOrder customerScript = currentCustomer.GetComponent<CustomerOrder>();
-            if (customerScript != null && !customerScript.placed)
+            CustomerController controller = currentCustomer.GetComponent<CustomerController>();
+            
+            // Only take order if customer hasn't placed order yet AND isn't already going to waiting
+            if (customerScript != null && !customerScript.placed && controller != null && !controller.shouldGoToWaiting)
             {
+                Debug.Log("Success! Taking order from " + currentCustomer.name);
+                
                 orderQueue.Enqueue(customerScript.o);
                 customerScript.placed = true;
 
@@ -32,16 +36,8 @@ public class Ordering : MonoBehaviour
                 }
 
                 // Send customer to waiting area after order is taken
-                CustomerController waitingScript = currentCustomer.GetComponent<CustomerController>();
-                if (waitingScript != null)
-                {
-                    Debug.Log("Ordering: Sending customer to waiting area");
-                    waitingScript.shouldGoToWaiting = true;
-                }
-                else
-                {
-                    Debug.LogError("Ordering: CustomerController script not found on " + currentCustomer.name);
-                }
+                Debug.Log("Ordering: Sending customer to waiting area");
+                controller.shouldGoToWaiting = true;
                 
                 // Only log order details if queue has items
                 if (orderQueue.Count > 0)
@@ -57,6 +53,10 @@ public class Ordering : MonoBehaviour
                     orderQueue.Dequeue(); //dequeued for proper order display (at least for debugging)
                 }
             }
+            else if (customerScript != null && customerScript.placed)
+            {
+                Debug.Log("Ordering: Customer has already placed order");
+            }
         }
     }
 
@@ -65,8 +65,19 @@ public class Ordering : MonoBehaviour
         // Detect when a customer enters the ordering checkpoint
         if (other.CompareTag("Customer"))
         {
-            currentCustomer = other.gameObject;
-            Debug.Log("Ordering: Customer " + other.gameObject.name + " entered checkpoint");
+            CustomerOrder orderScript = other.GetComponent<CustomerOrder>();
+            CustomerController controller = other.GetComponent<CustomerController>();
+            
+            // Only set as current customer if they haven't placed order and aren't going to waiting
+            if (orderScript != null && !orderScript.placed && controller != null && !controller.shouldGoToWaiting)
+            {
+                currentCustomer = other.gameObject;
+                Debug.Log("Ordering: Customer " + other.gameObject.name + " entered checkpoint (ready to order)");
+            }
+            else
+            {
+                Debug.Log("Ordering: Customer " + other.gameObject.name + " entered but not ready to order");
+            }
         }
     }
 
