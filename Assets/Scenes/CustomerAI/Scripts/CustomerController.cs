@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CustomerController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class CustomerController : MonoBehaviour
 	public CustomerQueueManager queueManager;
 	private Transform currentQueuePosition;
 	private bool inQueue = false;
+	public int waitingSpotNum;
 
 	[Header("Counter")]
 	public Transform counterTarget;
@@ -182,24 +184,12 @@ public class CustomerController : MonoBehaviour
 			
 			// Pick an available waiting spot if not assigned yet
 			if(assignedWaitingSpot == null && waitingSpots.Length > 0)
-			{
-				// Find all available spots
-				System.Collections.Generic.List<Transform> availableSpots = new System.Collections.Generic.List<Transform>();
-				foreach(Transform spot in waitingSpots)
+			{	
+				assignedWaitingSpot = waitingSpots[waitingSpotNum];
+				if(assignedWaitingSpot != null)
 				{
-					LeaveWithOrder leaveScript = spot.GetComponent<LeaveWithOrder>();
-					if(leaveScript != null && !leaveScript.isOccupied)
-					{
-						availableSpots.Add(spot);
-					}
-				}
-				
-				// Pick a random available spot
-				if(availableSpots.Count > 0)
-				{
-					int randomIndex = Random.Range(0, availableSpots.Count);
-					assignedWaitingSpot = availableSpots[randomIndex];
-					//Debug.Log($"CustomerController: {gameObject.name} assigned to {assignedWaitingSpot.name}");
+					
+					Debug.Log($"CustomerController: {gameObject.name} assigned to {assignedWaitingSpot.name}");
 				}
 				else
 				{
@@ -257,9 +247,7 @@ public class CustomerController : MonoBehaviour
 		timeToggle = true;
 	}
 
-	/// <summary>
 	/// Called by CustomerQueueManager to assign this customer a position in the queue
-	/// </summary>
 	public void AssignQueuePosition(Transform queuePosition)
 	{
 		currentQueuePosition = queuePosition;

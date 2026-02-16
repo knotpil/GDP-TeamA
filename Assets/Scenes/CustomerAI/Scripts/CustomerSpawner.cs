@@ -40,7 +40,7 @@ public class CustomerSpawner : MonoBehaviour
     
     private List<GameObject> activeCustomers = new List<GameObject>();
     private bool isSpawning = false;
-    private int customerNumber = 1;
+    private int customerNumber = 0;
     
     void Start()
     {
@@ -111,7 +111,6 @@ public class CustomerSpawner : MonoBehaviour
         // Spawn customer at spawn point
         GameObject newCustomer = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
         newCustomer.name = $"Customer_{customerNumber}";
-        customerNumber++;
         
         // Configure the customer
         CustomerController controller = newCustomer.GetComponent<CustomerController>();
@@ -123,11 +122,14 @@ public class CustomerSpawner : MonoBehaviour
             controller.exitPoint1 = exitPoint1;
             controller.exitPoint2 = exitPoint2;
             controller.customerPrefab = customerPrefab;
+            controller.waitingSpotNum = customerNumber % waitingSpots.Length;
+            customerNumber++;
         }
         else
         {
             Debug.LogError("CustomerSpawner: Customer prefab is missing CustomerController component!");
             Destroy(newCustomer);
+            customerNumber++;
             return false;
         }
         
