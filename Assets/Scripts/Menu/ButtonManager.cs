@@ -7,7 +7,7 @@ public class ButtonManager : MonoBehaviour
 {
     public void onPlayClick()
     {
-        SceneManager.LoadSceneAsync("Game");
+        SceneManager.LoadSceneAsync("Test Scene");
     }
 
 
@@ -23,7 +23,7 @@ public class ButtonManager : MonoBehaviour
 
     public void onMenuClick()
     {
-        SceneManager.LoadSceneAsync("Main Menu");
+        SceneManager.LoadSceneAsync("MainMenu");
     }
 
     public void onExitClick()

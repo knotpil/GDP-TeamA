@@ -5,12 +5,12 @@ public class MenuManager : MonoBehaviour
     public GameObject TitleScreenCanvas;
     public GameObject ButtonCanvas;
 
-    private bool pressedButton = false; // if a button has been pressed to start the game menu
+    private static bool pressedButton = false; // if a button has been pressed to start the game menu
 
     void Start()
     {
-        TitleScreenCanvas.SetActive(true);
-        ButtonCanvas.SetActive(false);
+        TitleScreenCanvas.SetActive(!pressedButton);
+        ButtonCanvas.SetActive(pressedButton);
     }
 
     // Update is called once per frame
@@ -32,7 +32,5 @@ public class MenuManager : MonoBehaviour
             TitleScreenCanvas.SetActive(true);
             ButtonCanvas.SetActive(false);
         }
-
-
     }
 }
