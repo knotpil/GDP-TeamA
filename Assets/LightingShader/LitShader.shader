@@ -13,12 +13,15 @@ Shader "Custom/LitShader"
             "RenderType" = "Opaque"
             "Queue" = "Geometry"
         }
-        
+
         Pass
         {
             Name "ForwardPass"
-            Tags {"LightMode" = "UniversalForward"}
-            
+            Tags
+            {
+                "LightMode" = "UniversalForward"
+            }
+
             HLSLPROGRAM
             #define _SPECULAR_COLOR
             #pragma vertex Vertex
@@ -26,12 +29,12 @@ Shader "Custom/LitShader"
             #pragma shader_feature _FORWARD_PLUS
             #pragma shader_feature_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma shader_feature_fragment _ADDITIONAL_LIGHT_SHADOWS
-            
+
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
-            half4 _BaseColor;
+                half4 _BaseColor;
             CBUFFER_END
 
             struct Attributes
@@ -63,32 +66,38 @@ Shader "Custom/LitShader"
                 lighting.normalWS = normalize(v.normalWS);
                 lighting.viewDirectionWS = GetWorldSpaceViewDir(v.positionWS);
                 lighting.shadowCoord = TransformWorldToShadowCoord(v.positionWS);
-                
-                SurfaceData surface = (SurfaceData) 0;
+
+                SurfaceData surface = (SurfaceData)0;
                 surface.albedo = _BaseColor;
                 surface.alpha = 1;
                 surface.smoothness = .9;
                 surface.specular = .9;
                 return UniversalFragmentBlinnPhong(lighting, surface) + unity_AmbientSky;
             }
-            
             ENDHLSL
         }
 
         Pass
         {
             Name "ShadowCaster"
-            Tags {"LightMode" = "ShadowCaster" }
-             
-             HLSLPROGRAM
+            Tags
+            {
+                "LightMode" = "ShadowCaster"
+            }
+
+            ColorMask 0
+
+            HLSLPROGRAM
+            #define _CASTING_PUNCTUAL_LIGHT_SHADOW
             #pragma vertex Vertex
             #pragma fragment Fragment
-            
+
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 
-            float3 _lightDirection;
-
+            float3 _LightDirection;
+            float3 _LightPosition;
+            
             struct Attributes
             {
                 float3 positionLS : POSITION;
@@ -102,10 +111,28 @@ Shader "Custom/LitShader"
 
             float4 GetShadowPositionHClip(Attributes input)
             {
-                float3 positionWS
-                float4 positionCS = 0;
+                float3 positionWS = TransformObjectToWorld(input.positionLS);
+                float3 normalWS = TransformObjectToWorldNormal(input.normalsLS);
+
+                #if _CASTING_PUNCTUAL_LIGHT_SHADOW
+                float3 lightDirectionWS = normalize(_LightPosition - positionWS);
+                #else
+                float3 lightDirectionWS = _LightDirection;
+                #endif
+
+                float4 positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, lightDirectionWS));
+                positionCS = ApplyShadowClamping(positionCS);
                 return positionCS;
             }
+
+            /*float4 GetShadowPositionHClip(Attributes input)
+            {
+                float3 positionWS = TransformObjectToWorld(input.positionLS);
+                float3 normalWS = TransformObjectToWorldNormal(input.normalsLS);
+                float4 positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, _LightDirection));
+                positionCS = ApplyShadowClamping(positionCS);
+                return positionCS;
+            }*/
 
             Varyings Vertex(Attributes input)
             {
@@ -118,7 +145,6 @@ Shader "Custom/LitShader"
             {
                 return 0;
             }
-            
             ENDHLSL
         }
     }
