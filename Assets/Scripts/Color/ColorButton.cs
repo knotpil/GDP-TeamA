@@ -14,29 +14,29 @@ public class ColorButton : MonoBehaviour, Interactable
 
     public void Interact(PlayerInteractor interactor)
     {
-        if (gameObject.name == "Red")
+        if (gameObject.name == "+Hue")
         {
-            colorPad.AddRed();
+            colorPad.AddHue();
         }
-        else if (gameObject.name == "Blue")
+        else if (gameObject.name == "-Hue")
         {
-            colorPad.AddBlue();
+            colorPad.RemoveHue();
         }
-        else if (gameObject.name == "Green")
+        else if (gameObject.name == "+Sat")
         {
-            colorPad.AddGreen();
+            colorPad.AddSat();
         }
-        else if (gameObject.name == "-Red")
+        else if (gameObject.name == "-Sat")
         {
-            colorPad.RemoveRed();
+            colorPad.RemoveSat();
         }
-        else if (gameObject.name == "-Blue")
+        else if (gameObject.name == "+Val")
         {
-            colorPad.RemoveBlue();
+            colorPad.AddVal();
         }
-        else if (gameObject.name == "-Green")
+        else if (gameObject.name == "-Val")
         {
-            colorPad.RemoveGreen();
+            colorPad.RemoveVal();
         }
     }
 
