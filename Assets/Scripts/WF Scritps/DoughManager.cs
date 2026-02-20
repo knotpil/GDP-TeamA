@@ -8,6 +8,9 @@ public class DoughManager : MonoBehaviour
     [SerializeField] GameObject doughPrefab;
     [SerializeField] Transform doughSpawn;
 
+    [Header("Detach Rules")]
+    [SerializeField] float detachDistance = 0.75f; // how far from spawn before we stop affecting this dough
+
     [Header("Sizing")]
     [SerializeField] float baseSize = 0.25f;
     [SerializeField] float sizePerUnit = 0.10f;
@@ -35,14 +38,34 @@ public class DoughManager : MonoBehaviour
 
     public void AddWater(int amount)
     {
+        DetachIfCarriedAway();
+
         water += Mathf.Max(0, amount);
         UpdateDoughVisual();
     }
 
     public void AddFlour(int amount)
     {
+        DetachIfCarriedAway();
+
         flour += Mathf.Max(0, amount);
         UpdateDoughVisual();
+    }
+
+    void DetachIfCarriedAway()
+    {
+        if (doughObj == null) return;
+        if (doughSpawn == null) return;
+
+        float d = Vector3.Distance(doughObj.transform.position, doughSpawn.position);
+        if (d <= detachDistance) return;
+
+        // Stop affecting the carried-away dough:
+        doughObj = null;
+
+        // Reset recipe amounts so the next dispenser press starts a fresh batch:
+        water = 0;
+        flour = 0;
     }
 
     void EnsureDoughExists()
